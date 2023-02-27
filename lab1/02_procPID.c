@@ -7,45 +7,49 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#define PPID_LINE 7
+
 int main()
 {
 	DIR *dp;
 	DIR *subdp;
 	struct dirent *dirp;
 	struct dirent *proContent;
-	char dirname[256] = "/proc";
+	char dirname[6] = "/proc";
+	int pid;
+	char name[64];
+	char status;
+	int ppid;
+	char buf[128];
 
 	if((dp = opendir(dirname)) == NULL)
 		printf("Can't open %s\n", dirname);
 
-	
-
 	while((dirp = readdir(dp)) != NULL) {
         if(dirp -> d_name[0] >= '0' && dirp -> d_name[0] <= '9') {
 
-			char processDirname[256] = dirname;
+			char processDirname[256] = "/proc";
 			strcat(processDirname, "/");
 			strcat(processDirname, dirp ->d_name);
-			strcat(processDirname, "/status");
+			strcat(processDirname, "/stat");
 
-			FILE* fp = fopen(processDirname, O_RDONLY);
-			if(fp == -1) {
+			// printf("%s ---- %s\n", dirp->d_name, processDirname);
+
+			FILE* fp = fopen(processDirname, "r");
+			if(fp == NULL) {
 		 		perror("open");
 			}
-            printf("%s\n", dirp->d_name);
-			char ch = fgetc(fp);        // 从文件中读取每个字符
-       		while (ch != EOF)    // 只要文件没读到结尾，就执行下面的代码
-		       {
-		            printf("%c", ch);
- 		            ch = fgetc(fp);
-		       }
+			fgets(buf, sizeof(buf), fp);
+			// printf("%s\n", buf);
+			sscanf(buf, "%d %s %c %d", &pid, name, &status, &ppid);
+			// printf("pid: %d, name: %s, status: %c, ppid: %d", pid, name, status, ppid);
+			printf("pid: %d, ppid: %d\n", pid, ppid);
+
+			
  	       	printf("\n--------------------------------\n");
 
         }
     }
-
-
-		
 
 	closedir(dp);
 	return 0;
