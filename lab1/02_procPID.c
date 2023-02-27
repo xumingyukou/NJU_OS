@@ -39,7 +39,7 @@ int main()
 		            printf("%c", ch);
  		            ch = fgetc(fp);
 		       }
- 	       	printf("\n");
+ 	       	printf("\n--------------------------------\n");
 
         }
     }
