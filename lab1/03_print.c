@@ -9,6 +9,7 @@
 #include<stdlib.h>
 
 #define PPID_LINE 7
+int isNewLine = 0;
 
 struct process {
     char* name;
@@ -24,7 +25,7 @@ struct pNode
 	int sonSize;
 }pNodes[100];
 
-int getParent(int ppid)
+int getProcess(int ppid)
 {
 	for(int i = 0; i < 100; i++)
 	{
@@ -71,10 +72,10 @@ int getPID()
 			// printf("%s\n", buf);
 			sscanf(buf, "%d %s %c %d", &pid, name, &status, &ppid);
 			// printf("pid: %d, name: %s, status: %c, ppid: %d", pid, name, status, ppid);
-			printf("name: %s, pid: %d, ppid: %d\n", name, pid, ppid);
+			// printf("name: %s, pid: %d, ppid: %d\n", name, pid, ppid);
 
 			
- 	       	printf("\n--------------------------------\n");
+ 	       	// printf("\n--------------------------------\n");
 
             struct process* pro = (struct process*)malloc(sizeof(struct process));
 			pro -> pid = pid;
@@ -89,7 +90,7 @@ int getPID()
 			node -> sonSize = 0;
 			pNodes[i] = *node;
 
-			int parentNum = getParent(ppid);
+			int parentNum = getProcess(ppid);
 			pNodes[parentNum].sons[pNodes[parentNum].sonSize] = *pro;
 			pNodes[parentNum].sonSize++;
 
@@ -101,20 +102,44 @@ int getPID()
 	return i;
 }
 
-void print() {
-    
+void backTrace(int index, int layer)
+{
+	if(isNewLine)
+	{
+		for(int i = 0; i < layer; i++)
+		{
+			printf("\t");
+		}
+	}
+	printf("%d\t", pNodes[index].pid);
+	int n = pNodes[index].sonSize;
+	if(n == 0)
+	{
+		printf("\n");
+		isNewLine = 1;
+		return;
+	}
+	else
+	{
+		isNewLine = 0;
+		for(int i = 0; i < n; i++)
+		{
+			int sonIndex = getProcess(pNodes[index].sons[i].pid);
+			backTrace(sonIndex, layer + 1);
+		}
+	}
 }
 
 int main() {
     int totalNum = getPID();
     printf("totalNum = %d\n", totalNum);
 
-    for(int i = 0; i < totalNum; i++)
-	{
-		printf("pid: %d, name: %s, sonSize: %d\n", pNodes[i].pid, pNodes[i].name, pNodes[i].sonSize);
-	}
+    // for(int i = 0; i < totalNum; i++)
+	// {
+	// 	printf("pid: %d, name: %s, sonSize: %d\n", pNodes[i].pid, pNodes[i].name, pNodes[i].sonSize);
+	// }
+	backTrace(0, 0);
 
-	
 
     return 0;
 }
