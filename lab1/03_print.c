@@ -14,7 +14,27 @@ struct process {
     char* name;
     int pid;
     int ppid;
-}processes[100];
+};
+
+struct pNode
+{
+	char* name;
+	int pid;
+	struct process sons[50];
+	int sonSize;
+}pNodes[100];
+
+int getParent(int ppid)
+{
+	for(int i = 0; i < 100; i++)
+	{
+		if(pNodes[i].pid == ppid)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
 
 int getPID()
 {
@@ -56,10 +76,22 @@ int getPID()
 			
  	       	printf("\n--------------------------------\n");
 
-            processes[i].name = (char*)malloc(sizeof(name)+1);
-            strcpy(processes[i].name, name);
-            processes[i].pid = pid;
-            processes[i].ppid = ppid;
+            struct process* pro = (struct process*)malloc(sizeof(struct process));
+			pro -> pid = pid;
+			pro -> ppid = ppid;
+			pro -> name = (char *)malloc(sizeof(name) + 1);
+			strcpy(pro -> name, name);
+
+			struct pNode* node = (struct pNode*)malloc(sizeof(struct pNode));
+			node -> pid = pid;
+			node -> name = (char*)malloc(sizeof(name) + 1);
+			strcpy(node -> name, name);
+			node -> sonSize = 0;
+			pNodes[i] = *node;
+
+			int parentNum = getParent(ppid);
+			pNodes[parentNum].sons[pNodes[parentNum].sonSize] = *pro;
+			pNodes[parentNum].sonSize++;
 
             i++;
         }
@@ -78,12 +110,11 @@ int main() {
     printf("totalNum = %d\n", totalNum);
 
     for(int i = 0; i < totalNum; i++)
-    {
-        printf("name: %s, pid: %d, ppid: %d\n", processes[i].name, processes[i].pid, processes[i].ppid);
-        printf("============================\n");
-    }
+	{
+		printf("pid: %d, name: %s, sonSize: %d\n", pNodes[i].pid, pNodes[i].name, pNodes[i].sonSize);
+	}
 
-
+	
 
     return 0;
 }
