@@ -1,6 +1,6 @@
 #include "thread.h"
 
-__thread char *base, *cur; // thread-local variables
+__thread char *base, *cur; // thread-local variables 线程局部变量
 __thread int id;
 
 // objdump to see how thread-local variables are implemented

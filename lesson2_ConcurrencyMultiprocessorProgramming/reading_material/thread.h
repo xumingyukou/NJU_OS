@@ -25,7 +25,7 @@ void *wrapper(void *arg) {
 void create(void *fn) {
   assert(tptr - tpool < NTHREAD);  // 断言一个表达式是否正确
   *tptr = (struct thread) {
-    .id = tptr - tpool + 1,
+    .id = tptr - tpool + 1, 
     .status = T_LIVE,
     .entry = fn,
   };
@@ -33,7 +33,7 @@ void create(void *fn) {
   ++tptr;
 }
 
-void join() {
+void join() {  // 执行join的线程会等待其它所有的线程结束再继续执行
   for (int i = 0; i < NTHREAD; i++) {
     struct thread *t = &tpool[i];
     if (t->status == T_LIVE) {
